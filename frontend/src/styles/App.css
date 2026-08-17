@@ -1,0 +1,758 @@
+@import "./sidebar.css";
+@import "./chat.css";
+@import "./input.css";
+@import "./space.css";
+@import "./message.css";
+@import "./typing.css";
+@import "./toast.css";
+@import "./imagePreview.css";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  font-family:
+    Inter,
+    sans-serif;
+
+  /*
+    IMPORTANT:
+    Keep the document transparent so the
+    Three.js space canvas can be seen.
+  */
+  background: transparent;
+
+  color: white;
+}
+
+/* =========================================================
+   MAIN APPLICATION
+========================================================= */
+
+.app {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    position: relative;
+
+    background: transparent !important;
+
+    z-index: 1;
+}
+
+.main {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+
+    position: relative;
+
+    background: transparent !important;
+
+    z-index: 2;
+}
+
+/* =========================================================
+   KARTIK AI AUTH PAGE
+========================================================= */
+
+.auth-page {
+  min-height: 100vh;
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  position: relative;
+
+  overflow: hidden;
+
+  padding: 30px 20px;
+
+  box-sizing: border-box;
+
+  /*
+    Keep auth page transparent so the
+    3D space remains visible behind it.
+  */
+  background: transparent;
+
+  z-index: 1;
+}
+
+/* =========================================================
+   AUTH BACKGROUND GLOW
+========================================================= */
+
+.auth-glow {
+  position: absolute;
+
+  width: 420px;
+  height: 420px;
+
+  border-radius: 50%;
+
+  filter: blur(100px);
+
+  opacity: 0.18;
+
+  pointer-events: none;
+
+  z-index: 0;
+}
+
+.auth-glow-one {
+  top: -180px;
+
+  left: -150px;
+
+  background: #6c63ff;
+}
+
+.auth-glow-two {
+  bottom: -200px;
+
+  right: -150px;
+
+  background: #00c6ff;
+}
+
+/* =========================================================
+   AUTH CARD
+========================================================= */
+
+.auth-card {
+  width: 100%;
+
+  max-width: 430px;
+
+  padding: 42px 40px 30px;
+
+  background: rgba(
+    15,
+    17,
+    30,
+    0.78
+  );
+
+  border: 1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.10
+    );
+
+  border-radius: 24px;
+
+  backdrop-filter: blur(24px);
+
+  -webkit-backdrop-filter: blur(24px);
+
+  box-shadow:
+    0 25px 80px
+      rgba(
+        0,
+        0,
+        0,
+        0.45
+      ),
+    inset 0 1px 0
+      rgba(
+        255,
+        255,
+        255,
+        0.06
+      );
+
+  position: relative;
+
+  z-index: 2;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.auth-logo {
+  display: flex;
+
+  justify-content: center;
+
+  margin-bottom: 20px;
+}
+
+.auth-logo-icon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 18px;
+
+  font-size: 29px;
+
+  color: white;
+
+  background: linear-gradient(
+    135deg,
+    #6c63ff,
+    #4f8cff
+  );
+
+  box-shadow:
+    0 10px 30px
+      rgba(
+        88,
+        92,
+        255,
+        0.35
+      );
+
+  animation:
+    auth-logo-float
+    3s ease-in-out
+    infinite;
+}
+
+@keyframes auth-logo-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.auth-heading {
+  text-align: center;
+
+  margin-bottom: 30px;
+}
+
+.auth-heading h1 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 30px;
+
+  font-weight: 700;
+
+  letter-spacing: -0.6px;
+}
+
+.auth-heading p {
+  margin: 9px 0 0;
+
+  color: #9297aa;
+
+  font-size: 14px;
+}
+
+.auth-heading strong {
+  color: #c9caff;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.auth-field {
+  margin-bottom: 20px;
+}
+
+.auth-field label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #d7d9e4;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+.auth-label-row {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+.auth-label-row label {
+  margin-bottom: 8px;
+}
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.auth-input-wrapper {
+  height: 52px;
+
+  display: flex;
+
+  align-items: center;
+
+  position: relative;
+
+  border-radius: 13px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.045
+    );
+
+  border: 1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.09
+    );
+
+  transition: 0.2s ease;
+}
+
+.auth-input-wrapper:focus-within {
+  border-color:
+    rgba(
+      108,
+      99,
+      255,
+      0.75
+    );
+
+  background:
+    rgba(
+      108,
+      99,
+      255,
+      0.06
+    );
+
+  box-shadow:
+    0 0 0 3px
+      rgba(
+        108,
+        99,
+        255,
+        0.10
+      );
+}
+
+.auth-input-icon {
+  width: 45px;
+
+  display: flex;
+
+  justify-content: center;
+
+  color: #85899b;
+
+  font-size: 16px;
+}
+
+.auth-input-wrapper input {
+  flex: 1;
+
+  height: 100%;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  color: white;
+
+  font-size: 14px;
+
+  padding-right: 12px;
+}
+
+.auth-input-wrapper input::placeholder {
+  color: #666b7d;
+}
+
+/* =========================================================
+   PASSWORD TOGGLE
+========================================================= */
+
+.password-toggle {
+  border: none;
+
+  background: transparent;
+
+  color: #85899b;
+
+  cursor: pointer;
+
+  padding: 10px 14px;
+
+  font-size: 15px;
+}
+
+.password-toggle:hover {
+  color: white;
+}
+
+/* =========================================================
+   FORGOT PASSWORD
+========================================================= */
+
+.forgot-password {
+  border: none;
+
+  background: transparent;
+
+  color: #8e8aff;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  padding: 0;
+}
+
+.forgot-password:hover {
+  color: #b0adff;
+}
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.auth-error {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 11px 13px;
+
+  margin-bottom: 17px;
+
+  border-radius: 10px;
+
+  background:
+    rgba(
+      255,
+      70,
+      70,
+      0.08
+    );
+
+  border: 1px solid
+    rgba(
+      255,
+      70,
+      70,
+      0.20
+    );
+
+  color: #ff8d8d;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   LOGIN BUTTON
+========================================================= */
+
+.auth-submit {
+  width: 100%;
+
+  height: 52px;
+
+  border: none;
+
+  border-radius: 13px;
+
+  background: linear-gradient(
+    135deg,
+    #6c63ff,
+    #4f8cff
+  );
+
+  color: white;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  box-shadow:
+    0 10px 25px
+      rgba(
+        82,
+        90,
+        255,
+        0.25
+      );
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.auth-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 14px 32px
+      rgba(
+        82,
+        90,
+        255,
+        0.35
+      );
+}
+
+.auth-submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.auth-submit:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+}
+
+.login-arrow {
+  font-size: 19px;
+}
+
+/* =========================================================
+   SPINNER
+========================================================= */
+
+.auth-spinner {
+  width: 17px;
+
+  height: 17px;
+
+  border: 2px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.35
+    );
+
+  border-top-color: white;
+
+  border-radius: 50%;
+
+  animation:
+    auth-spin
+    0.7s linear
+    infinite;
+}
+
+@keyframes auth-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   REGISTER
+========================================================= */
+
+.auth-divider {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin: 27px 0 17px;
+
+  color: #666b7d;
+
+  font-size: 12px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+
+  height: 1px;
+
+  flex: 1;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+}
+
+.auth-register {
+  width: 100%;
+
+  height: 48px;
+
+  border-radius: 12px;
+
+  border: 1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.11
+    );
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.035
+    );
+
+  color: #d9dbeb;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.auth-register:hover {
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.07
+    );
+
+  border-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.18
+    );
+
+  color: white;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.auth-footer {
+  text-align: center;
+
+  margin: 20px 0 0;
+
+  color: #555a6d;
+
+  font-size: 11px;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 520px) {
+  .auth-page {
+    padding: 20px 14px;
+  }
+
+  .auth-card {
+    padding: 34px 24px 25px;
+
+    border-radius: 20px;
+  }
+
+  .auth-heading h1 {
+    font-size: 26px;
+  }
+}
+
+/* =========================================================
+   FINAL SPACE LAYER OVERRIDES
+========================================================= */
+
+.app {
+  position: relative;
+
+  z-index: 1;
+
+  background: transparent;
+}
+
+.main {
+  position: relative;
+
+  z-index: 2;
+
+  background: transparent;
+}
+
+.sidebar {
+  position: relative;
+
+  z-index: 3;
+}

@@ -1,0 +1,187 @@
+/* =========================================================
+   INPUT BOX
+========================================================= */
+
+.input-box {
+  width: 100%;
+
+  padding: 18px 22px;
+
+  display: flex;
+
+  gap: 12px;
+
+  /*
+    Transparent so the space remains visible.
+  */
+  background: rgba(5, 7, 15, 0.42);
+
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  position: relative;
+
+  z-index: 20;
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.input-box input {
+  flex: 1;
+
+  min-width: 0;
+
+  padding: 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  outline: none;
+
+  border-radius: 14px;
+
+  background: rgba(20, 22, 32, 0.72);
+
+  color: white;
+
+  font-size: 16px;
+
+  backdrop-filter: blur(10px);
+
+  -webkit-backdrop-filter: blur(10px);
+
+  transition:
+    background 0.2s ease,
+    border 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input-box input::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.input-box input:focus {
+  background: rgba(25, 27, 40, 0.82);
+
+  border-color: rgba(99, 102, 241, 0.5);
+
+  box-shadow:
+    0 0 0 3px rgba(99, 102, 241, 0.08);
+}
+
+
+/* =========================================================
+   SEND BUTTON
+========================================================= */
+
+.input-box button {
+  width: 140px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #4f46e5
+  );
+
+  color: white;
+
+  cursor: pointer;
+
+  font-size: 15px;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.input-box button:hover {
+  background: linear-gradient(
+    135deg,
+    #3b82f6,
+    #6366f1
+  );
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 25px rgba(37, 99, 235, 0.25);
+}
+
+.input-box button:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   UPLOAD BUTTON
+========================================================= */
+
+.upload-btn {
+  width: 50px;
+
+  height: 50px;
+
+  flex-shrink: 0;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: rgba(31, 41, 55, 0.82);
+
+  color: white;
+
+  cursor: pointer;
+
+  font-size: 18px;
+
+  transition:
+    background 0.25s ease,
+    transform 0.2s ease;
+}
+
+.upload-btn:hover {
+  background: rgba(55, 65, 81, 0.95);
+
+  transform: translateY(-1px);
+}
+
+.upload-btn:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  .input-box {
+    padding: 12px;
+  }
+
+  .input-box button {
+    width: 90px;
+  }
+
+  .input-box input {
+    font-size: 14px;
+
+    padding: 14px;
+  }
+
+  .upload-btn {
+    width: 46px;
+
+    height: 46px;
+  }
+}

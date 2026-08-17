@@ -1,0 +1,66 @@
+# =========================
+# ENVIRONMENT / SECRETS
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# PYTHON
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+venv/
+.venv/
+env/
+
+# =========================
+# DATABASE
+# =========================
+*.db
+*.sqlite
+*.sqlite3
+
+# =========================
+# NODE
+# =========================
+node_modules/
+
+# =========================
+# VITE / FRONTEND BUILD
+# =========================
+frontend/dist/
+
+# =========================
+# LOGS
+# =========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# EDITORS
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# WINDOWS
+# =========================
+Thumbs.db
+Desktop.ini
+
+# =========================
+# OS
+# =========================
+.DS_Store
+# =========================
+# USER UPLOADS / GENERATED DATA
+# =========================
+backend/uploads/
+backend/storage/
+backend/vector_db/

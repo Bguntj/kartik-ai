@@ -1,0 +1,277 @@
+/* =========================================================
+   CHAT AREA
+========================================================= */
+
+.chat-area {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 0;
+
+  overflow-y: auto;
+
+  padding: 30px 40px;
+
+  /*
+    IMPORTANT:
+    Space background ko visible rakhta hai.
+  */
+  background: transparent !important;
+
+  position: relative;
+
+  z-index: 2;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.chat-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-area::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+
+  border-radius: 10px;
+}
+
+.chat-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.20);
+}
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+.messages {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 14px;
+
+  width: 100%;
+
+  max-width: 900px;
+
+  margin: auto;
+
+  padding-bottom: 40px;
+}
+
+
+/* =========================================================
+   WELCOME
+========================================================= */
+
+.welcome {
+  margin: auto;
+
+  text-align: center;
+
+  position: relative;
+
+  z-index: 2;
+}
+
+.welcome h1 {
+  font-size: 54px;
+
+  margin-bottom: 15px;
+
+  color: white;
+
+  text-shadow:
+    0 0 20px rgba(255, 255, 255, 0.12);
+}
+
+.welcome p {
+  color: rgba(255, 255, 255, 0.55);
+
+  font-size: 20px;
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+.message {
+  display: flex;
+
+  gap: 15px;
+
+  padding: 15px;
+
+  position: relative;
+
+  z-index: 2;
+}
+
+
+/* =========================================================
+   MESSAGE AVATAR
+========================================================= */
+
+.message .avatar {
+  font-size: 24px;
+}
+
+
+/* =========================================================
+   MESSAGE CONTENT
+========================================================= */
+
+.content {
+  max-width: 800px;
+
+  line-height: 1.6;
+
+  color: white;
+}
+
+.content pre {
+  border-radius: 10px;
+
+  overflow: auto;
+}
+
+
+/* =========================================================
+   CODE BOX
+========================================================= */
+
+.code-box {
+  position: relative;
+}
+
+
+/* =========================================================
+   COPY BUTTON
+========================================================= */
+
+.copy-btn {
+  position: absolute;
+
+  right: 10px;
+
+  top: 10px;
+
+  z-index: 2;
+
+  background: rgba(30, 30, 40, 0.9);
+
+  color: white;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  padding: 5px 10px;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  background: rgba(60, 60, 75, 0.95);
+}
+
+
+/* =========================================================
+   MESSAGE ACTIONS
+========================================================= */
+
+.message-actions {
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 8px;
+}
+
+.message-actions button {
+  background: rgba(20, 20, 30, 0.75);
+
+  color: #aaa;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  padding: 5px 10px;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+}
+
+.message-actions button:hover {
+  color: white;
+
+  background: rgba(255, 255, 255, 0.10);
+}
+
+
+/* =========================================================
+   DRAGGING
+========================================================= */
+
+.dragging {
+  position: relative;
+
+  border: 2px dashed #3b82f6;
+}
+
+
+/* =========================================================
+   DROP OVERLAY
+========================================================= */
+
+.drop-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.75);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  z-index: 100;
+}
+
+.drop-overlay h2 {
+  color: white;
+
+  font-size: 30px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  .chat-area {
+    padding: 20px;
+  }
+
+  .welcome h1 {
+    font-size: 38px;
+  }
+
+  .welcome p {
+    font-size: 16px;
+  }
+}

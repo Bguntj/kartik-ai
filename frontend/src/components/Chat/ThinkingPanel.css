@@ -1,0 +1,94 @@
+.thinking-panel {
+    margin: 10px 20px;
+    padding: 12px 15px;
+
+    background: rgba(20, 20, 30, 0.75);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+
+    backdrop-filter: blur(10px);
+
+    animation: thinkingAppear 0.25s ease;
+}
+
+.thinking-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #ffffff;
+
+    margin-bottom: 10px;
+}
+
+.thinking-icon {
+    font-size: 17px;
+}
+
+.thinking-events {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.thinking-event {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    font-size: 13px;
+
+    color: #a9a9b3;
+
+    animation: eventAppear 0.2s ease;
+}
+
+.thinking-dot {
+    font-size: 8px;
+    color: #7c7cff;
+
+    animation: pulseDot 1.2s infinite;
+}
+
+.thinking-text {
+    line-height: 1.4;
+}
+
+@keyframes thinkingAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes eventAppear {
+    from {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulseDot {
+    0%,
+    100% {
+        opacity: 0.35;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}

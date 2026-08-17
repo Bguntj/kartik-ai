@@ -1,0 +1,211 @@
+.message{
+
+    display:flex;
+
+    width:100%;
+
+    margin:18px 0;
+
+}
+
+.message.user{
+
+    justify-content:flex-end;
+
+}
+
+.message.bot{
+
+    justify-content:flex-start;
+
+}
+
+.message-content{
+
+    max-width:75%;
+
+    padding:16px 18px;
+
+    border-radius:18px;
+
+    line-height:1.7;
+
+    font-size:15px;
+
+    word-break:break-word;
+
+}
+
+.message.user .message-content{
+
+    background:#2563eb;
+
+    color:white;
+
+}
+
+.message.bot .message-content{
+
+    background:#1e293b;
+
+    color:white;
+
+}
+
+.message pre{
+
+    border-radius:12px;
+
+    overflow:auto;
+
+}
+
+.message code{
+
+    font-family:Consolas, monospace;
+
+}
+
+.copy-btn{
+
+    margin-top:12px;
+
+    background:#2563eb;
+
+    border:none;
+
+    color:white;
+
+    padding:8px 14px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+}
+
+.copy-btn:hover{
+
+    background:#3b82f6;
+
+}
+.message-actions{
+
+    display:flex;
+
+    gap:8px;
+
+    margin-top:10px;
+
+    opacity:0;
+
+    transition:.2s;
+
+}
+
+.message:hover .message-actions{
+
+    opacity:1;
+
+}
+
+.action-btn{
+
+    background:#2d2d2d;
+
+    color:white;
+
+    border:none;
+
+    border-radius:8px;
+
+    padding:6px 10px;
+
+    cursor:pointer;
+
+    font-size:13px;
+
+    transition:.2s;
+
+}
+
+.action-btn:hover{
+
+    background:#444;
+
+}
+.streaming{
+
+    animation: blink 1s infinite;
+
+}
+
+@keyframes blink{
+
+    0%{
+        opacity:1;
+    }
+
+    50%{
+        opacity:0;
+    }
+
+    100%{
+        opacity:1;
+    }
+
+}.streaming{
+
+    animation: blink 1s infinite;
+
+}
+
+@keyframes blink{
+
+    0%{
+        opacity:1;
+    }
+
+    50%{
+        opacity:.35;
+    }
+
+    100%{
+        opacity:1;
+    }
+
+}
+
+.code-box{
+
+    position:relative;
+
+}
+
+.copy-btn{
+
+    position:absolute;
+
+    right:10px;
+
+    top:10px;
+
+    background:#2b2b2b;
+
+    color:white;
+
+    border:none;
+
+    border-radius:6px;
+
+    padding:4px 10px;
+
+    cursor:pointer;
+
+}
+
+.copy-btn:hover{
+
+    background:#444;
+
+}
