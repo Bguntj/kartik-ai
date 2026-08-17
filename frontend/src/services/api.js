@@ -1,7 +1,10 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
+  baseURL:
+    import.meta.env.VITE_API_URL ||
+    "http://127.0.0.1:8000",
+
   headers: {
     "Content-Type": "application/json",
   },
@@ -14,7 +17,8 @@ const API = axios.create({
 
 API.interceptors.request.use((config) => {
 
-  const token = localStorage.getItem("access_token");
+  const token =
+    localStorage.getItem("access_token");
 
   if (token) {
 
@@ -41,7 +45,7 @@ API.interceptors.response.use(
     if (error.response?.status === 401) {
 
       console.log(
-        "🔐 Authentication expired. Logging out..."
+        "Authentication expired. Logging out..."
       );
 
       localStorage.removeItem(

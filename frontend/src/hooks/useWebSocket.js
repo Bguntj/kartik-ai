@@ -19,11 +19,28 @@ export default function useWebSocket() {
         if (!token) {
 
             console.log(
-                "🔒 No access token. WebSocket not connected."
+                "No access token. WebSocket not connected."
             );
 
             return;
         }
+
+        // --------------------------------------
+        // Backend URL
+        // --------------------------------------
+
+        const apiUrl =
+            import.meta.env.VITE_API_URL ||
+            "http://127.0.0.1:8000";
+
+        // Convert:
+        // http://  -> ws://
+        // https:// -> wss://
+
+        const wsUrl =
+            apiUrl
+                .replace(/^https:\/\//, "wss://")
+                .replace(/^http:\/\//, "ws://");
 
         // --------------------------------------
         // Connect WebSocket with JWT
@@ -31,13 +48,13 @@ export default function useWebSocket() {
 
         const ws =
             new WebSocket(
-                `ws://127.0.0.1:8000/ws?token=${encodeURIComponent(token)}`
+                `${wsUrl}/ws?token=${encodeURIComponent(token)}`
             );
 
         ws.onopen = () => {
 
             console.log(
-                "✅ WebSocket Connected"
+                "WebSocket Connected"
             );
 
         };
@@ -50,7 +67,7 @@ export default function useWebSocket() {
                     JSON.parse(event.data);
 
                 console.log(
-                    "🧠 EVENT:",
+                    "EVENT:",
                     data
                 );
 
@@ -62,7 +79,7 @@ export default function useWebSocket() {
             } catch (error) {
 
                 console.error(
-                    "❌ WebSocket message error:",
+                    "WebSocket message error:",
                     error
                 );
 
@@ -73,7 +90,7 @@ export default function useWebSocket() {
         ws.onerror = (error) => {
 
             console.error(
-                "❌ WebSocket Error:",
+                "WebSocket Error:",
                 error
             );
 
@@ -82,7 +99,7 @@ export default function useWebSocket() {
         ws.onclose = (event) => {
 
             console.log(
-                "🔌 WebSocket Closed:",
+                "WebSocket Closed:",
                 event.code
             );
 
@@ -110,11 +127,8 @@ export default function useWebSocket() {
     };
 
     return {
-
         events,
-
         clearEvents
-
     };
 
 }
