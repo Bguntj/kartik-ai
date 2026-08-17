@@ -23,7 +23,10 @@ export default function useChat(clearEvents) {
             setMessages(res.data);
 
         } catch (err) {
-            console.error("❌ Failed to load messages:", err);
+            console.error(
+                "Failed to load messages:",
+                err
+            );
         }
     };
 
@@ -34,7 +37,6 @@ export default function useChat(clearEvents) {
     const sendMessage = async (sessionId, text) => {
         if (!text || !text.trim()) return;
 
-        // Clear previous AI activity
         if (clearEvents) {
             clearEvents();
         }
@@ -68,17 +70,35 @@ export default function useChat(clearEvents) {
             new AbortController();
 
         try {
-            const token = localStorage.getItem("access_token");
+            const token =
+                localStorage.getItem("access_token");
 
-const response = await fetch(
-    "http://127.0.0.1:8000/chat/stream",
-    {
-        method: "POST",
+            // ==========================================
+            // Production / Local Backend URL
+            // ==========================================
 
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
+            const apiUrl =
+                (
+                    import.meta.env.VITE_API_URL ||
+                    "http://127.0.0.1:8000"
+                ).replace(/\/+$/, "");
+
+            const response = await fetch(
+                `${apiUrl}/chat/stream`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        ...(token
+                            ? {
+                                Authorization:
+                                    `Bearer ${token}`
+                            }
+                            : {})
+                    },
 
                     body: JSON.stringify({
                         session_id: sessionId,
@@ -136,9 +156,7 @@ const response = await fetch(
                 setMessages((prev) => {
                     const updated = [...prev];
 
-                    if (
-                        updated.length === 0
-                    ) {
+                    if (updated.length === 0) {
                         return updated;
                     }
 
@@ -146,8 +164,7 @@ const response = await fetch(
                         updated.length - 1
                     ] = {
                         sender: "bot",
-                        text:
-                            botText + "▍",
+                        text: botText + "▌",
                         streaming: true
                     };
 
@@ -165,9 +182,7 @@ const response = await fetch(
             setMessages((prev) => {
                 const updated = [...prev];
 
-                if (
-                    updated.length === 0
-                ) {
+                if (updated.length === 0) {
                     return updated;
                 }
 
@@ -188,32 +203,28 @@ const response = await fetch(
             // User Stopped Generation
             // ==========================================
 
-            if (
-                err.name === "AbortError"
-            ) {
+            if (err.name === "AbortError") {
+
                 console.log(
-                    "🛑 Generation stopped"
+                    "Generation stopped"
                 );
 
             } else {
 
                 console.error(
-                    "❌ Streaming Error:",
+                    "Streaming Error:",
                     err
                 );
 
                 setMessages((prev) => {
                     const updated = [...prev];
 
-                    if (
-                        updated.length === 0
-                    ) {
+                    if (updated.length === 0) {
                         return [
                             ...prev,
                             {
                                 sender: "bot",
-                                text:
-                                    "❌ Streaming Error"
+                                text: "❌ Streaming Error"
                             }
                         ];
                     }
@@ -222,8 +233,7 @@ const response = await fetch(
                         updated.length - 1
                     ] = {
                         sender: "bot",
-                        text:
-                            "❌ Streaming Error",
+                        text: "❌ Streaming Error",
                         streaming: false
                     };
 
@@ -242,9 +252,8 @@ const response = await fetch(
     // ==========================================
 
     const stopGenerating = () => {
-        if (
-            abortController.current
-        ) {
+        if (abortController.current) {
+
             abortController.current.abort();
 
             abortController.current = null;
