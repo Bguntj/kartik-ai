@@ -1,4 +1,3 @@
-from sentence_transformers import SentenceTransformer
 import numpy as np
 
 
@@ -26,6 +25,13 @@ def get_model():
         print(
             f"Loading embedding model: {MODEL_NAME}"
         )
+
+        # IMPORTANT:
+        # Import only when embedding is actually needed.
+        # This prevents Torch / Transformers from loading
+        # during FastAPI startup.
+
+        from sentence_transformers import SentenceTransformer
 
         model = SentenceTransformer(
             MODEL_NAME,
