@@ -1,4 +1,3 @@
-```python
 import os
 import requests
 
@@ -48,24 +47,29 @@ BREVO_API_URL = (
 print("==========================================")
 print("Kartik AI Email Service")
 print("==========================================")
+
 print(
     "BREVO API KEY SET:",
     bool(BREVO_API_KEY)
 )
+
 print(
     "BREVO API KEY LENGTH:",
     len(BREVO_API_KEY)
     if BREVO_API_KEY
     else 0
 )
+
 print(
     "SENDER EMAIL:",
     SENDER_EMAIL
 )
+
 print(
     "BREVO API URL:",
     BREVO_API_URL
 )
+
 print("==========================================")
 
 
@@ -82,26 +86,39 @@ def _send_email(
     print("==========================================")
     print("BREVO EMAIL REQUEST")
     print("==========================================")
-    print("Recipient:", recipient_email)
-    print("Subject:", subject)
+
+    print(
+        "Recipient:",
+        recipient_email
+    )
+
+    print(
+        "Subject:",
+        subject
+    )
+
     print(
         "API KEY SET:",
         bool(BREVO_API_KEY)
     )
+
     print(
         "API KEY LENGTH:",
         len(BREVO_API_KEY)
         if BREVO_API_KEY
         else 0
     )
+
     print(
         "Sender:",
         SENDER_EMAIL
     )
+
     print(
         "Target URL:",
         BREVO_API_URL
     )
+
 
     # ==========================================
     # Validate Configuration
@@ -110,17 +127,18 @@ def _send_email(
     if not BREVO_API_KEY:
 
         print(
-            "❌ BREVO_API_KEY is missing."
+            "BREVO_API_KEY is missing."
         )
 
         raise RuntimeError(
             "BREVO_API_KEY is not configured."
         )
 
+
     if not SENDER_EMAIL:
 
         print(
-            "❌ SMTP_EMAIL is missing."
+            "SMTP_EMAIL is missing."
         )
 
         raise RuntimeError(
@@ -146,6 +164,7 @@ def _send_email(
         "textContent": body
     }
 
+
     headers = {
         "accept": "application/json",
         "api-key": BREVO_API_KEY,
@@ -158,7 +177,7 @@ def _send_email(
     # ==========================================
 
     print(
-        "📡 Sending request to Brevo..."
+        "Sending request to Brevo..."
     )
 
     try:
@@ -170,11 +189,13 @@ def _send_email(
             timeout=30
         )
 
+
     except requests.exceptions.Timeout as e:
 
         print(
-            "❌ BREVO NETWORK ERROR: TIMEOUT"
+            "BREVO NETWORK ERROR: TIMEOUT"
         )
+
         print(
             "ERROR:",
             repr(e)
@@ -184,11 +205,13 @@ def _send_email(
             "Brevo connection timed out."
         ) from e
 
+
     except requests.exceptions.ConnectionError as e:
 
         print(
-            "❌ BREVO NETWORK ERROR: CONNECTION"
+            "BREVO NETWORK ERROR: CONNECTION"
         )
+
         print(
             "ERROR:",
             repr(e)
@@ -198,11 +221,13 @@ def _send_email(
             f"Unable to connect to Brevo: {str(e)}"
         ) from e
 
+
     except requests.exceptions.RequestException as e:
 
         print(
-            "❌ BREVO REQUEST ERROR"
+            "BREVO REQUEST ERROR"
         )
+
         print(
             "ERROR:",
             repr(e)
@@ -227,7 +252,9 @@ def _send_email(
         response.text[:1000]
     )
 
-    print("==========================================")
+    print(
+        "=========================================="
+    )
 
 
     # ==========================================
@@ -254,10 +281,8 @@ def _send_email(
     except ValueError:
 
         return {
-            "status_code":
-                response.status_code,
-            "response":
-                response.text
+            "status_code": response.status_code,
+            "response": response.text
         }
 
 
@@ -325,5 +350,4 @@ Kartik AI
         subject="Kartik AI Password Reset Code",
         body=body
     )
-```
 
