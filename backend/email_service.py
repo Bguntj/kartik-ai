@@ -1,7 +1,7 @@
+```python
 import os
-import smtplib
+import requests
 
-from email.message import EmailMessage
 from dotenv import load_dotenv
 
 
@@ -25,31 +25,46 @@ load_dotenv(
 
 
 # ==========================================
-# SMTP Configuration
+# Brevo Configuration
 # ==========================================
 
-SMTP_HOST = "smtp.gmail.com"
-SMTP_PORT = 587
+BREVO_API_KEY = os.getenv(
+    "BREVO_API_KEY"
+)
 
-SMTP_EMAIL = os.getenv("SMTP_EMAIL")
+SENDER_EMAIL = os.getenv(
+    "SMTP_EMAIL"
+)
 
-SMTP_PASSWORD = os.getenv(
-    "SMTP_APP_PASSWORD"
+BREVO_API_URL = (
+    "https://api.brevo.com/v3/smtp/email"
 )
 
 
 # ==========================================
-# Debug
+# Debug / Startup Information
 # ==========================================
 
 print("==========================================")
 print("Kartik AI Email Service")
 print("==========================================")
-print("ENV FILE:", ENV_FILE)
-print("SMTP EMAIL:", SMTP_EMAIL)
 print(
-    "SMTP PASSWORD SET:",
-    bool(SMTP_PASSWORD)
+    "BREVO API KEY SET:",
+    bool(BREVO_API_KEY)
+)
+print(
+    "BREVO API KEY LENGTH:",
+    len(BREVO_API_KEY)
+    if BREVO_API_KEY
+    else 0
+)
+print(
+    "SENDER EMAIL:",
+    SENDER_EMAIL
+)
+print(
+    "BREVO API URL:",
+    BREVO_API_URL
 )
 print("==========================================")
 
@@ -64,37 +79,186 @@ def _send_email(
     body: str
 ):
 
-    if not SMTP_EMAIL:
+    print("==========================================")
+    print("BREVO EMAIL REQUEST")
+    print("==========================================")
+    print("Recipient:", recipient_email)
+    print("Subject:", subject)
+    print(
+        "API KEY SET:",
+        bool(BREVO_API_KEY)
+    )
+    print(
+        "API KEY LENGTH:",
+        len(BREVO_API_KEY)
+        if BREVO_API_KEY
+        else 0
+    )
+    print(
+        "Sender:",
+        SENDER_EMAIL
+    )
+    print(
+        "Target URL:",
+        BREVO_API_URL
+    )
+
+    # ==========================================
+    # Validate Configuration
+    # ==========================================
+
+    if not BREVO_API_KEY:
+
+        print(
+            "❌ BREVO_API_KEY is missing."
+        )
+
+        raise RuntimeError(
+            "BREVO_API_KEY is not configured."
+        )
+
+    if not SENDER_EMAIL:
+
+        print(
+            "❌ SMTP_EMAIL is missing."
+        )
+
         raise RuntimeError(
             "SMTP_EMAIL is not configured."
         )
 
-    if not SMTP_PASSWORD:
+
+    # ==========================================
+    # Prepare Request
+    # ==========================================
+
+    payload = {
+        "sender": {
+            "email": SENDER_EMAIL,
+            "name": "Kartik AI"
+        },
+        "to": [
+            {
+                "email": recipient_email
+            }
+        ],
+        "subject": subject,
+        "textContent": body
+    }
+
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json"
+    }
+
+
+    # ==========================================
+    # Send Request
+    # ==========================================
+
+    print(
+        "📡 Sending request to Brevo..."
+    )
+
+    try:
+
+        response = requests.post(
+            BREVO_API_URL,
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+
+    except requests.exceptions.Timeout as e:
+
+        print(
+            "❌ BREVO NETWORK ERROR: TIMEOUT"
+        )
+        print(
+            "ERROR:",
+            repr(e)
+        )
+
         raise RuntimeError(
-            "SMTP_APP_PASSWORD is not configured."
+            "Brevo connection timed out."
+        ) from e
+
+    except requests.exceptions.ConnectionError as e:
+
+        print(
+            "❌ BREVO NETWORK ERROR: CONNECTION"
+        )
+        print(
+            "ERROR:",
+            repr(e)
         )
 
-    message = EmailMessage()
+        raise RuntimeError(
+            f"Unable to connect to Brevo: {str(e)}"
+        ) from e
 
-    message["Subject"] = subject
-    message["From"] = SMTP_EMAIL
-    message["To"] = recipient_email
+    except requests.exceptions.RequestException as e:
 
-    message.set_content(body)
-
-    with smtplib.SMTP(
-        SMTP_HOST,
-        SMTP_PORT
-    ) as server:
-
-        server.starttls()
-
-        server.login(
-            SMTP_EMAIL,
-            SMTP_PASSWORD
+        print(
+            "❌ BREVO REQUEST ERROR"
+        )
+        print(
+            "ERROR:",
+            repr(e)
         )
 
-        server.send_message(message)
+        raise RuntimeError(
+            f"Brevo request failed: {str(e)}"
+        ) from e
+
+
+    # ==========================================
+    # Response Debug
+    # ==========================================
+
+    print(
+        "BREVO RESPONSE STATUS:",
+        response.status_code
+    )
+
+    print(
+        "BREVO RESPONSE:",
+        response.text[:1000]
+    )
+
+    print("==========================================")
+
+
+    # ==========================================
+    # Handle Error
+    # ==========================================
+
+    if response.status_code >= 400:
+
+        raise RuntimeError(
+            f"Brevo email error "
+            f"{response.status_code}: "
+            f"{response.text}"
+        )
+
+
+    # ==========================================
+    # Success
+    # ==========================================
+
+    try:
+
+        return response.json()
+
+    except ValueError:
+
+        return {
+            "status_code":
+                response.status_code,
+            "response":
+                response.text
+        }
 
 
 # ==========================================
@@ -122,7 +286,7 @@ Regards,
 Kartik AI
 """
 
-    _send_email(
+    return _send_email(
         recipient_email=recipient_email,
         subject="Your Kartik AI Login Code",
         body=body
@@ -149,15 +313,17 @@ Your password reset verification code is:
 
 This code will expire in 5 minutes.
 
-If you did not request a password reset,
+If you did not request this,
 you can safely ignore this email.
 
 Regards,
 Kartik AI
 """
 
-    _send_email(
+    return _send_email(
         recipient_email=recipient_email,
         subject="Kartik AI Password Reset Code",
         body=body
     )
+```
+

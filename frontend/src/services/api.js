@@ -15,25 +15,30 @@ const API = axios.create({
 // Attach JWT token
 // ==========================================
 
-API.interceptors.request.use((config) => {
+API.interceptors.request.use(
+  (config) => {
 
-  const token =
-    localStorage.getItem("access_token");
+    const token =
+      localStorage.getItem("access_token");
 
-  if (token) {
+    if (token) {
 
-    config.headers.Authorization =
-      `Bearer ${token}`;
+      config.headers.Authorization =
+        `Bearer ${token}`;
 
+    }
+
+    return config;
+  },
+
+  (error) => {
+    return Promise.reject(error);
   }
-
-  return config;
-
-});
+);
 
 
 // ==========================================
-// Handle expired / invalid JWT
+// Handle JWT expiration
 // ==========================================
 
 API.interceptors.response.use(
@@ -42,7 +47,30 @@ API.interceptors.response.use(
 
   (error) => {
 
-    if (error.response?.status === 401) {
+    const status =
+      error.response?.status;
+
+    const requestURL =
+      error.config?.url || "";
+
+
+    // ==========================================
+    // Only logout for protected API requests
+    // ==========================================
+
+    const isAuthEndpoint =
+      requestURL.startsWith("/auth/login") ||
+      requestURL.startsWith("/auth/register") ||
+      requestURL.startsWith("/auth/verify-otp") ||
+      requestURL.startsWith("/auth/resend-otp") ||
+      requestURL.startsWith("/auth/forgot-password") ||
+      requestURL.startsWith("/auth/reset-password");
+
+
+    if (
+      status === 401 &&
+      !isAuthEndpoint
+    ) {
 
       console.log(
         "Authentication expired. Logging out..."
@@ -55,11 +83,10 @@ API.interceptors.response.use(
       window.dispatchEvent(
         new Event("auth:logout")
       );
-
     }
 
-    return Promise.reject(error);
 
+    return Promise.reject(error);
   }
 
 );

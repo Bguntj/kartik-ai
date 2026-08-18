@@ -31,6 +31,10 @@ from email_service import (
 )
 
 
+# ==========================================
+# Router
+# ==========================================
+
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
@@ -58,7 +62,7 @@ def generate_otp():
 
 def hash_otp(otp: str):
     return hashlib.sha256(
-        otp.encode()
+        otp.encode("utf-8")
     ).hexdigest()
 
 
@@ -67,35 +71,44 @@ def set_otp(
     otp: str,
     purpose: str
 ):
-
     now = datetime.now(timezone.utc)
 
     user.otp_code_hash = hash_otp(otp)
 
     user.otp_expires_at = (
-        now +
-        timedelta(
+        now + timedelta(
             minutes=OTP_EXPIRY_MINUTES
         )
     ).isoformat()
 
     user.otp_attempts = 0
-
     user.otp_purpose = purpose
 
+    # This field must exist in models.py
     user.otp_last_sent_at = now.isoformat()
 
 
 def check_resend_cooldown(user):
 
-    if not user.otp_last_sent_at:
+    last_sent_value = getattr(
+        user,
+        "otp_last_sent_at",
+        None
+    )
+
+    if not last_sent_value:
         return
 
     try:
-
         last_sent = datetime.fromisoformat(
-            user.otp_last_sent_at
+            last_sent_value
         )
+
+        # Handle old timestamps without timezone
+        if last_sent.tzinfo is None:
+            last_sent = last_sent.replace(
+                tzinfo=timezone.utc
+            )
 
         elapsed = (
             datetime.now(timezone.utc)
@@ -122,8 +135,7 @@ def check_resend_cooldown(user):
             )
 
     except ValueError:
-
-        pass
+        return
 
 
 def verify_otp(
@@ -137,7 +149,6 @@ def verify_otp(
     # ==========================================
 
     if user.otp_purpose != purpose:
-
         return False, "Invalid OTP."
 
 
@@ -146,7 +157,6 @@ def verify_otp(
     # ==========================================
 
     if not user.otp_code_hash:
-
         return False, "Invalid or expired OTP."
 
 
@@ -155,7 +165,6 @@ def verify_otp(
     # ==========================================
 
     if user.otp_attempts >= MAX_OTP_ATTEMPTS:
-
         return (
             False,
             "Too many incorrect attempts. "
@@ -168,23 +177,23 @@ def verify_otp(
     # ==========================================
 
     if not user.otp_expires_at:
-
         return False, "OTP has expired."
 
-
     try:
-
         expires_at = datetime.fromisoformat(
             user.otp_expires_at
         )
 
-    except ValueError:
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(
+                tzinfo=timezone.utc
+            )
 
+    except ValueError:
         return False, "Invalid OTP."
 
 
     if datetime.now(timezone.utc) > expires_at:
-
         return False, "OTP has expired."
 
 
@@ -202,7 +211,6 @@ def verify_otp(
         )
 
         if remaining > 0:
-
             return (
                 False,
                 f"Invalid OTP. "
@@ -246,11 +254,12 @@ def register(data: RegisterRequest):
         # Check Existing Email
         # ==========================================
 
+        email = data.email.lower().strip()
+
         existing_user = (
             db.query(User)
             .filter(
-                User.email ==
-                data.email.lower().strip()
+                User.email == email
             )
             .first()
         )
@@ -284,7 +293,7 @@ def register(data: RegisterRequest):
 
         user = User(
             username=data.username.strip(),
-            email=data.email.lower().strip(),
+            email=email,
             password_hash=hash_password(
                 data.password
             )
@@ -308,7 +317,6 @@ def register(data: RegisterRequest):
         )
 
     finally:
-
         db.close()
 
 
@@ -327,11 +335,12 @@ def login(data: LoginRequest):
         # Find User
         # ==========================================
 
+        email = data.email.lower().strip()
+
         user = (
             db.query(User)
             .filter(
-                User.email ==
-                data.email.lower().strip()
+                User.email == email
             )
             .first()
         )
@@ -340,9 +349,7 @@ def login(data: LoginRequest):
 
             raise HTTPException(
                 status_code=401,
-                detail=(
-                    "Invalid email or password."
-                )
+                detail="Invalid email or password."
             )
 
 
@@ -357,9 +364,7 @@ def login(data: LoginRequest):
 
             raise HTTPException(
                 status_code=401,
-                detail=(
-                    "Invalid email or password."
-                )
+                detail="Invalid email or password."
             )
 
 
@@ -368,11 +373,19 @@ def login(data: LoginRequest):
         # ==========================================
 
         otp = generate_otp()
-        print("========== LOGIN OTP DEBUG ==========")
+
+        print(
+            "========== LOGIN OTP DEBUG =========="
+        )
         print("EMAIL:", user.email)
         print("OTP:", otp)
         print("OTP HASH:", hash_otp(otp))
         print("=====================================")
+
+
+        # ==========================================
+        # Store OTP
+        # ==========================================
 
         set_otp(
             user,
@@ -396,15 +409,29 @@ def login(data: LoginRequest):
 
         except Exception as e:
 
+            import traceback
+
             print(
-                "❌ OTP Email Error:",
-                e
+                "========== OTP EMAIL ERROR =========="
             )
+            print(
+                "ERROR:",
+                repr(e)
+            )
+            traceback.print_exc()
+            print(
+                "====================================="
+            )
+
+            # Don't leave an active OTP after
+            # email delivery failed.
+            clear_otp(user)
+            db.commit()
 
             raise HTTPException(
                 status_code=500,
                 detail=(
-                    "Unable to send OTP email."
+                    f"Unable to send OTP email: {str(e)}"
                 )
             )
 
@@ -422,7 +449,6 @@ def login(data: LoginRequest):
         }
 
     finally:
-
         db.close()
 
 
@@ -440,6 +466,10 @@ def verify_login_otp(
 
     try:
 
+        # ==========================================
+        # Find User
+        # ==========================================
+
         user = (
             db.query(User)
             .filter(
@@ -456,6 +486,10 @@ def verify_login_otp(
                 detail="Invalid verification request."
             )
 
+
+        # ==========================================
+        # Verify OTP
+        # ==========================================
 
         valid, error = verify_otp(
             user,
@@ -496,7 +530,6 @@ def verify_login_otp(
         }
 
     finally:
-
         db.close()
 
 
@@ -530,9 +563,7 @@ def resend_otp(
 
             raise HTTPException(
                 status_code=401,
-                detail=(
-                    "Invalid email or password."
-                )
+                detail="Invalid email or password."
             )
 
 
@@ -547,9 +578,7 @@ def resend_otp(
 
             raise HTTPException(
                 status_code=401,
-                detail=(
-                    "Invalid email or password."
-                )
+                detail="Invalid email or password."
             )
 
 
@@ -588,15 +617,27 @@ def resend_otp(
 
         except Exception as e:
 
+            import traceback
+
             print(
-                "❌ Resend OTP Email Error:",
-                e
+                "========== RESEND OTP EMAIL ERROR =========="
             )
+            print(
+                "ERROR:",
+                repr(e)
+            )
+            traceback.print_exc()
+            print(
+                "============================================"
+            )
+
+            clear_otp(user)
+            db.commit()
 
             raise HTTPException(
                 status_code=500,
                 detail=(
-                    "Unable to send OTP email."
+                    f"Unable to send OTP email: {str(e)}"
                 )
             )
 
@@ -609,7 +650,6 @@ def resend_otp(
         }
 
     finally:
-
         db.close()
 
 
@@ -625,6 +665,10 @@ def forgot_password(
     db = SessionLocal()
 
     try:
+
+        # ==========================================
+        # Find User
+        # ==========================================
 
         user = (
             db.query(User)
@@ -685,15 +729,27 @@ def forgot_password(
 
         except Exception as e:
 
+            import traceback
+
             print(
-                "❌ Password Reset Email Error:",
-                e
+                "========== PASSWORD RESET EMAIL ERROR =========="
             )
+            print(
+                "ERROR:",
+                repr(e)
+            )
+            traceback.print_exc()
+            print(
+                "================================================"
+            )
+
+            clear_otp(user)
+            db.commit()
 
             raise HTTPException(
                 status_code=500,
                 detail=(
-                    "Unable to send reset email."
+                    f"Unable to send reset email: {str(e)}"
                 )
             )
 
@@ -706,7 +762,6 @@ def forgot_password(
         }
 
     finally:
-
         db.close()
 
 
@@ -737,6 +792,10 @@ def reset_password(
     db = SessionLocal()
 
     try:
+
+        # ==========================================
+        # Find User
+        # ==========================================
 
         user = (
             db.query(User)
@@ -800,7 +859,6 @@ def reset_password(
         }
 
     finally:
-
         db.close()
 
 
@@ -826,9 +884,7 @@ def get_current_user(
 
         raise HTTPException(
             status_code=401,
-            detail=(
-                "Invalid or expired token."
-            )
+            detail="Invalid or expired token."
         )
 
 
@@ -859,5 +915,4 @@ def get_current_user(
         )
 
     finally:
-
-        db.close()  
+        db.close()
